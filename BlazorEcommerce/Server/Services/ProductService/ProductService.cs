@@ -3,9 +3,9 @@
     public class ProductService : IProductService
     {
         private readonly DataContext _context;
-        public ProductService(DataContext contextt)
+        public ProductService(DataContext context)
         {
-            _context = contextt;
+            _context = context;
             
         }
         public async Task<ServiceResponse<List<Product>>> GetProductsAsync()

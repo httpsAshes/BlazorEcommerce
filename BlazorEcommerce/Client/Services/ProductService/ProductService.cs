@@ -13,10 +13,9 @@
         public async Task GetProducts()
         {
             var result = 
-                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/producta");
+                await _http.GetFromJsonAsync<ServiceResponse<List<Product>>>("api/product");
             if(result != null && result.Data !=null)
-                Products = result.Data;
-
+                Products = result.Data;      
         }
     }
 }
