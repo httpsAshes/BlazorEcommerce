@@ -1,6 +1,4 @@
-﻿
-
-namespace BlazorEcommerce.Client.Services.ProductServices
+﻿namespace BlazorEcommerce.Client.Services.ProductServices
 {
     public class ProductService : IProductService
     {
