@@ -23,6 +23,10 @@
     width: 200px;
     text-align: center;
 }
+.page-selection {
+    margin-right: 15px;
+    margin-bottom: 30px;
+}
 .price {
     color: green;
 }
