@@ -101,16 +101,16 @@ namespace BlazorEcommerce.Server.Services.ProductService
 
         }
 
-        public async Task<ServiceResponse<ProductSearchResult>> SearchProducts(string searchtext, int page)
+        public async Task<ServiceResponse<ProductSearchResult>> SearchProducts(string searchText, int page)
         {
             var pageResults = 2f;
-            var pageCount = Math.Ceiling((await FindProductsBySearchtext(searchtext)).Count / pageResults);
+            var pageCount = Math.Ceiling((await FindProductsBySearchtext(searchText)).Count / pageResults);
             var products = await _context.Products
-                            .Where(p => p.Title.ToLower().Contains(searchtext.ToLower())
+                            .Where(p => p.Title.ToLower().Contains(searchText.ToLower())
                             ||
-                            p.Description.ToLower().Contains(searchtext.ToLower()))
+                            p.Description.ToLower().Contains(searchText.ToLower()))
                             .Include(p => p.Variants)
-                            .Skip((page-1)*(int)pageCount)
+                            .Skip((page - 1) * (int)pageCount)
                             .Take((int)pageResults)
                             .ToListAsync();
 
