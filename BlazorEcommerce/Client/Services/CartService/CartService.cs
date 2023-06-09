@@ -1,4 +1,5 @@
-﻿using BlazorEcommerce.Shared;
+﻿using BlazorEcommerce.Client.Pages;
+using BlazorEcommerce.Shared;
 using Blazored.LocalStorage;
 
 namespace BlazorEcommerce.Client.Services.CartService
@@ -7,13 +8,15 @@ namespace BlazorEcommerce.Client.Services.CartService
     {
 
         private readonly ILocalStorageService _locaStorage;
+        private readonly AuthenticationStateProvider _authStateProvider;
 
         private readonly HttpClient _http;
-        public CartService(ILocalStorageService localStorage, HttpClient http) 
+        public CartService(ILocalStorageService localStorage, HttpClient http, AuthenticationStateProvider authStateProvider) 
         {
             
             _locaStorage = localStorage;
             _http = http;
+            _authStateProvider = authStateProvider;
 
         }
 
@@ -21,6 +24,15 @@ namespace BlazorEcommerce.Client.Services.CartService
 
         public async Task AddToCart(CartItem cartItem)
         {
+            if ((await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine("User Athenticated");
+            }
+            else
+            {
+                Console.WriteLine("User Not Authenticated");
+            }
+            
             var cart = await _locaStorage.GetItemAsync<List<CartItem>>("cart");
             if(cart == null)
             {
@@ -80,6 +92,21 @@ namespace BlazorEcommerce.Client.Services.CartService
                 OnChange.Invoke();
             }
             
+        }
+
+        public async Task StoreCartItems(bool emptyLocalCart = false)
+        {
+            var localCart = await _locaStorage.GetItemAsync<List<CartItem>>("cart");
+            if (localCart == null)
+            {
+                return;
+            }
+
+            await _http.PostAsJsonAsync("api/cart", localCart);
+            if(emptyLocalCart)
+            {
+                await _locaStorage.RemoveItemAsync("cart");
+            }
         }
 
         public async Task UpdateQuantity(CartProductResponse product)
