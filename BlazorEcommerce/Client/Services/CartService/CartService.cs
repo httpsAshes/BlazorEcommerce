@@ -24,7 +24,7 @@ namespace BlazorEcommerce.Client.Services.CartService
 
         public async Task AddToCart(CartItem cartItem)
         {
-            if ((await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated)
+            if (await IsUserAuthenticated())
             {
                 Console.WriteLine("User Athenticated");
             }
@@ -32,15 +32,15 @@ namespace BlazorEcommerce.Client.Services.CartService
             {
                 Console.WriteLine("User Not Authenticated");
             }
-            
+
             var cart = await _locaStorage.GetItemAsync<List<CartItem>>("cart");
-            if(cart == null)
+            if (cart == null)
             {
                 cart = new List<CartItem>();
             }
-            var sameItem =cart.Find(x  => x.ProductId == cartItem.ProductId &&
+            var sameItem = cart.Find(x => x.ProductId == cartItem.ProductId &&
                             x.ProductTypeId == cartItem.ProductTypeId);
-            if(sameItem == null)
+            if (sameItem == null)
             {
                 cart.Add(cartItem);
             }
@@ -48,13 +48,15 @@ namespace BlazorEcommerce.Client.Services.CartService
             {
                 sameItem.Quantity += cartItem.Quantity;
             }
-            
+
             await _locaStorage.SetItemAsync("cart", cart);
-            OnChange.Invoke();
+            await GetCartItemsCount();
         }
 
+        
         public async Task<List<CartItem>> GetCartItems()
         {
+            await GetCartItemsCount();
             var cart = await _locaStorage.GetItemAsync<List<CartItem>>("cart");
             if (cart == null)
             {
@@ -63,6 +65,22 @@ namespace BlazorEcommerce.Client.Services.CartService
             
 
             return cart;
+        }
+
+        public async Task GetCartItemsCount()
+        {
+            if(await IsUserAuthenticated())
+            {
+                var result = await _http.GetFromJsonAsync<ServiceResponse<int>>("api/cart/count");
+                var count = result.Data;
+                await _locaStorage.SetItemAsync<int>("cartItemsCount", count);
+            }
+            else
+            {
+                var cart = await _locaStorage.GetItemAsync<List<CartItem>>("cart");
+                await _locaStorage.SetItemAsync<int>("cartItemsCount", cart != null ? cart.Count : 0);
+            }
+            OnChange.Invoke();
         }
 
         public async Task<List<CartProductResponse>> GetCartProducts()
@@ -89,7 +107,7 @@ namespace BlazorEcommerce.Client.Services.CartService
             {
                 cart.Remove(cartItem);
                 await _locaStorage.SetItemAsync("cart", cart);
-                OnChange.Invoke();
+                await GetCartItemsCount();
             }
             
         }
@@ -126,5 +144,11 @@ namespace BlazorEcommerce.Client.Services.CartService
                 
             }
         }
+        private async Task<bool> IsUserAuthenticated()
+        {
+            return (await _authStateProvider.GetAuthenticationStateAsync()).User.Identity.IsAuthenticated;
+        }
+
     }
+
 }
