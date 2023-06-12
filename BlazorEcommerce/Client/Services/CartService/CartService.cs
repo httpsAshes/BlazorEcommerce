@@ -80,6 +80,8 @@ namespace BlazorEcommerce.Client.Services.CartService
                 var cart = await _locaStorage.GetItemAsync<List<CartItem>>("cart");
                 await _locaStorage.SetItemAsync<int>("cartItemsCount", cart != null ? cart.Count : 0);
             }
+
+
             OnChange.Invoke();
         }
 
