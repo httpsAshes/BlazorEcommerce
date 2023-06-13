@@ -4,7 +4,7 @@
 
 namespace BlazorEcommerce.Server.Migrations
 {
-    public partial class addCartItems : Migration
+    public partial class cartItem : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
