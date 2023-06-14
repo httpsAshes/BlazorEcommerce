@@ -17,7 +17,35 @@ namespace BlazorEcommerce.Server.Services.OderService
             
 
         }
-        
+
+        public async Task<ServiceResponse<List<OrderOverviewResponse>>> GetOrders()
+        {
+            var response = new ServiceResponse<List<OrderOverviewResponse>>();
+            var orders = await _context.Orders
+                .Include(o => o.OrderItems).ThenInclude(oi => oi.Product)
+                .Where(o => o.UserId == _authService.GetUserId())
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+            var orderResponse = new List<OrderOverviewResponse>();
+            orders.ForEach(o => orderResponse.Add(new OrderOverviewResponse 
+            {
+                Id = o.Id,
+                OrderDate = o.OrderDate,
+                TotalPrice = o.TotalPrice,
+                Product = o.OrderItems.Count >1 ?
+                $"{o.OrderItems.First().Product.Title}and" +
+                $"{o.OrderItems.Count-1} more...":
+                o.OrderItems.First().Product.Title,
+                ProductImageUrl =o.OrderItems.First().Product.ImageUrl
+
+            }));
+
+
+            response.Data = orderResponse;
+            return response;
+
+            
+        }
 
         public async Task<ServiceResponse<bool>> PlaceOrder()
         {
