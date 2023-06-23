@@ -14,6 +14,17 @@ namespace BlazorEcommerce.Server.Controllers
                _orderService = orderService;
         }
 
+
+        //Dont need WebHook calls directly 
+        //[HttpPost]
+        //public async Task<ActionResult<ServiceResponse<bool>>> PLaceOrder()
+        //{
+
+        //    var result = await _orderService.PlaceOrder();
+        //    return Ok(result);
+        //}
+
+
         [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<OrderOverviewResponse>>>> GetOrders()
         {

@@ -23,7 +23,7 @@ else
                     <h4><a href="product/@product.Id"> @product.Title</a></h4>
                     @if(product.Variants !=null && product.Variants.Count > 0)
                     {
-                        <h5>
+                        <h5 class="price">
                             $@product.Variants[0].Price
                         </h5>
                     }
