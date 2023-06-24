@@ -15,7 +15,7 @@ namespace BlazorEcommerce.Server.Controllers
         }
 
 
-        //Dont need WebHook calls directly 
+        //Dont need WebHook calls PlaceOrder
         //[HttpPost]
         //public async Task<ActionResult<ServiceResponse<bool>>> PLaceOrder()
         //{
