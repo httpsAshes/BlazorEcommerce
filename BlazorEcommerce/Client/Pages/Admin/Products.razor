@@ -1,0 +1,84 @@
+﻿@page "/admin/products"
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles ="Admin")]
+
+
+<h3>Products</h3>
+
+@if(ProductService.AdminProducts==null)
+{
+    <span>Loading Products...</span>
+}
+else
+{
+    <button class="btn btn-primary float-end" @onclick="CreateProduct">
+        <i class="oi oi-plus">Add new product</i>
+    </button>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Variant</th>
+                <th>Price</th>
+                <th>Visible</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize Items ="ProductService.AdminProducts" Context="product">
+                <tr>
+                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <td> <img src="@product.ImageUrl"/></td>
+                    }
+                    else if(product.Images.Count >0)
+                    {
+                      <img src="@product.Images[0].Data">
+                
+                    }
+                    <td>
+                        @foreach(var varient in product.Variants)
+                        {
+                            <span>@varient.ProductType.Name</span><br/>
+
+                        }
+                    </td>
+                    <td>
+                        @foreach (var varient in product.Variants)
+                        {
+                            <span>@varient.Price</span>
+                            <br />
+
+                        }
+                    </td>
+                    <td>@(product.Visible ? "✔️" : "")</td>
+
+                    <td>
+                        <button class="btn btn-primary" @onclick="(() => EditProduct(product.Id))">
+                            <i class="oi oi-pencil"></i>
+                        </button>
+                    </td>
+                </tr>
+            </Virtualize>
+        </tbody>
+    </table>
+}
+
+@code {
+    protected override  async Task OnInitializedAsync()
+    {
+        await ProductService.GetAdminProducts();
+
+    }
+
+    void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"admin/product/{productId}");
+
+    }
+    void CreateProduct()
+    {
+        NavigationManager.NavigateTo("admin/product");
+    }
+}
